@@ -128,6 +128,7 @@ public class DirectionFrag extends Fragment {
     };
 
     //Default onCreate
+    //testing
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
