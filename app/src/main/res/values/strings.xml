@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SJSUMap</string>
+    <string name="google_map_key"> AIzaSyAuxkV5sQWDJiE3c9BtJEMESCe2KMva_Qk </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="navigation_drawer_open"> Open navigation drawer</string>
+    <string name="navigation_drawer_close"> Close navigation drawer</string>
+    <string name="mode_walking">Walking</string>
+    <string name="mode_driving">Driving</string>
+    <string name="mode_transit">Transit</string>
+    <string name="button_ok">Go</string>
+    <string name="hint_origin_input">Please enter origin here</string>
+    <string name="hint_dest_input">Please enter destination here</string>
+</resources>
