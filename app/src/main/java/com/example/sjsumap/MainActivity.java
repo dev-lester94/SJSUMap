@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -90,6 +91,9 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
 
     private SearchFrag searchFrag;
 
+    private boolean mTwoPane;
+    private ViewGroup mEmptyContainer;
+
 
     /*onCreate and make sure to call getMapAsync on the mapFragment for the map
     * to be ready to load up on screen*/
@@ -98,6 +102,13 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(findViewById(R.id.android_tablet_layout) != null){
+            mTwoPane = true;
+            mEmptyContainer = findViewById(R.id.empty_container);
+        }else{
+            mTwoPane = false;
+        }
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -311,9 +322,18 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
         imageName = imageName.replaceAll(regex, replacement).toLowerCase();
         int imageNameResID = getResources().
                 getIdentifier(imageName , "drawable", getPackageName());
-        detailFrag = new DetailFrag(clickedPolygonBuilding, imageNameResID);
-        getSupportFragmentManager().beginTransaction().
-                replace(R.id.container, detailFrag).addToBackStack("detailFrag").commit();
+
+            detailFrag = new DetailFrag(clickedPolygonBuilding, imageNameResID);
+
+
+        if(mTwoPane){
+            mEmptyContainer.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.tablet_container, detailFrag).addToBackStack("detailFrag").commit();
+        }else {
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.container, detailFrag).addToBackStack("detailFrag").commit();
+        }
     }
 
     /*Navigation drawer to provide easier navigation ways around the app
@@ -367,9 +387,18 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, directionFrag)
-                        .addToBackStack("directionFrag").commit();
-                //Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_LONG).show();
+
+                if(mTwoPane){
+                    mEmptyContainer.setVisibility(View.GONE);
+                    directionFrag.isTwoPane(mTwoPane);
+
+                    getSupportFragmentManager().beginTransaction().replace(R.id.tablet_container, directionFrag)
+                            .addToBackStack("directionFrag").commit();
+                }else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, directionFrag)
+                            .addToBackStack("directionFrag").commit();
+                    //Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -439,18 +468,37 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
 
         switch (item.getItemId()){
             case R.id.nav_service:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, serviceFrag)
-                        .addToBackStack("serviceFrag").commit();
+                if(mTwoPane) {
+                    mEmptyContainer.setVisibility(View.GONE);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.tablet_container, serviceFrag)
+                            .addToBackStack("serviceFrag").commit();
+                }else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, serviceFrag)
+                            .addToBackStack("serviceFrag").commit();
+                }
 
                 break;
             case R.id.nav_search:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, searchFrag)
-                        .addToBackStack("searchFrag").commit();
+                if(mTwoPane){
+                    mEmptyContainer.setVisibility(View.GONE);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.tablet_container, searchFrag)
+                            .addToBackStack("searchFrag").commit();
+                }else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, searchFrag)
+                            .addToBackStack("searchFrag").commit();
+                }
                 break;
 
             case R.id.nav_direction:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, directionFrag)
-                        .addToBackStack("directionFrag").commit();
+                if(mTwoPane){
+                    mEmptyContainer.setVisibility(View.GONE);
+                    directionFrag.isTwoPane(mTwoPane);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.tablet_container, directionFrag)
+                            .addToBackStack("directionFrag").commit();
+                }else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, directionFrag)
+                            .addToBackStack("directionFrag").commit();
+                }
                 break;
 
             case R.id.nav_share:
@@ -485,6 +533,9 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
     public void onServiceFragSent(Service service) {
 
         resetMap();
+        if(mTwoPane){
+            mEmptyContainer.setVisibility(View.VISIBLE);
+        }
 
         //Log.i("serviceName", service.getServiceName());
         //Log.i("serviceIcon", service.getIcon());
@@ -520,12 +571,13 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
 
         mMap.addMarker(new MarkerOptions()
                 .position(direction.getStartLocation())
-                .title("Start Address: " + direction.getStartAddress()));
+                .title("Start Address: " + direction.getStartAddress())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
         mMap.addMarker(new MarkerOptions()
                 .position(direction.getEndLocation())
-                .title("End Address: " +  direction.getEndAdddress())
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                .title("End Address: " +  direction.getEndAdddress()));
+
 
         mMap.addPolyline(new PolylineOptions().addAll(direction.getPolyLineList()));
 
@@ -538,6 +590,11 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
     @Override
     public void onSearchFragSent(LatLng buildingCenter, String buildingName) {
         resetMap();
+
+        if(mTwoPane){
+            mEmptyContainer.setVisibility(View.VISIBLE);
+        }
+
         mMap.addMarker(new MarkerOptions()
                 .position(buildingCenter)
                 .title(buildingName));

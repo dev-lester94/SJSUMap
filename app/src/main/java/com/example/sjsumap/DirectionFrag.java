@@ -61,6 +61,12 @@ public class DirectionFrag extends Fragment {
 
     private DirectionFragListener listener;
 
+    private boolean mTwoPane;
+
+    public void isTwoPane(boolean twoPane) {
+        mTwoPane = twoPane;
+    }
+
     //Interface to send back data to MainActivity
     public interface DirectionFragListener{
         void onDirectionFragSent(Direction direction);
@@ -115,10 +121,12 @@ public class DirectionFrag extends Fragment {
 
             listener.onDirectionFragSent(direction);
 
-            FragmentManager fm = getFragmentManager();
-            FragmentTransaction fragTransaction = fm.beginTransaction();
-            fragTransaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            fm.popBackStack();
+            if(!mTwoPane) {
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction fragTransaction = fm.beginTransaction();
+                fragTransaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                fm.popBackStack();
+            }
         }
 
         @Override
