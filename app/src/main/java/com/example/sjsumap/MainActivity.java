@@ -453,6 +453,10 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
             super.onBackPressed();
         }
 
+        if(mTwoPane){
+            mEmptyContainer.setVisibility(View.VISIBLE);
+        }
+
     }
 
     //Select a nvagiation item to go search up a building, know about the services
@@ -555,6 +559,8 @@ public class MainActivity extends  AppCompatActivity  implements OnMapReadyCallb
         }
 
     }
+
+
 
 
 

@@ -65,6 +65,11 @@
             app:menu="@menu/drawer_menu"/>
     </androidx.drawerlayout.widget.DrawerLayout>
 
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"/>
+
     <LinearLayout
         android:id="@+id/android_tablet_layout"
         android:layout_width="0dp"
@@ -81,10 +86,12 @@
 
 
 
+
         <RelativeLayout
             android:id="@+id/empty_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             >
 
             <ImageView
